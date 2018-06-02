@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\CommentForm;
+use app\models\Comments;
 use app\models\Products;
 use app\models\RegisterForm;
 use app\models\Reviews;
@@ -87,6 +89,7 @@ class SiteController extends Controller
         $model = Products::findIdentity($id);
 
 
+
         //Получение путей картинок
 
         $model->images = explode(",", $model->images);
@@ -96,10 +99,30 @@ class SiteController extends Controller
                 [
                     'item' => 'Видеокарта'
                 ]);
-        else
+        else {
+            $comment = new CommentForm();
+            $comments = Comments::find()->where("id_product=".$model->id)->all();
+            if(Yii::$app->request->post())
+            {
+                $comment->load(Yii::$app->request->post());
+                if($comment->sendComment($model))
+                {
+                    Yii::$app->session->setFlash('result', "success");
+                    Yii::$app->session->setFlash('message', "Комментарий успешно оставлен");
+                }
+                else
+                {
+                    Yii::$app->session->setFlash('result', "danger");
+                    Yii::$app->session->setFlash('message', "При отправке комментария что-то пошло не так");
+                }
+                $this->refresh();
+            }
             return $this->render('product', [
                 'product' => $model,
+                'comments'=>$comments,
+                'commentForm'=>$comment
             ]);
+        }
     }
 
     public function actionUser()
@@ -152,7 +175,7 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->redirect("/login");
     }
 
     /**

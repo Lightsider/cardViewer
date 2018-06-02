@@ -59,8 +59,11 @@ $this->title = 'Аккаунт '.$user->login;
     </div>
 
     <?php ActiveForm::end(); ?>
-
-
-
-    Если хотите выйти, то жмите <?=Html::a(" сюда","site/logout")?>
+    <h2>Если вы хотите выйти, то нажмите на эту кнопку:</h2>
+    <?php echo Html::beginForm(['/site/logout'], 'post');
+    echo "<div class=\"btn-group\" role=\"group\">";
+    echo Html::submitButton('Выйти',['class'=>'btn btn-default']);
+    echo "</div>";
+    echo Html::endForm();
+    ?>
 </div>

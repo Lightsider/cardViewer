@@ -77,23 +77,30 @@ img.prof{
     margin-bottom: 5%;
 }
 .profoto4min1{
-    width: 75px;
-    height: 85px;
+    width: 15%;
+    height: auto;
     float: left;
-    border: 2px dashed black;
 }
 .profoto4min2{
-    width: 580px;
-    height: 25px;
-    border: 2px dashed black;
-    margin-left: 12%;
+    width: 85%;
+    height: 30%;
+    margin-left: 15%;
     margin-bottom: 2px;
+    padding: 5px;
+    padding-left: 15px;
 }
 .profoto4min3{
-    width: 580px;
-    height: 55px;
-    border: 2px dashed black;
-    margin-left: 12%;
+    padding: 5px;
+    width: 85%;
+    height: 70%;
+    margin-left: 15%;
+    padding-left: 10px;
+}
+
+.profoto4min2 p
+{
+    font-size: 15px;
+    margin: 0;
 }
 
 .col-md-4{
@@ -313,4 +320,25 @@ div#bot {
 {
     min-height: 25vh;
     resize: vertical;
+}
+
+.form-group, .form-control
+{
+    width: auto;
+}
+
+#commentform-verifycode-image
+{
+    float: left;
+}
+
+.profoto4min1 img
+{
+    max-width: 100%;
+    box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.5);
+}
+
+.profoto3 hr
+{
+    margin: 0;
 }
