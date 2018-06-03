@@ -16,7 +16,7 @@ $this->title = $product->title;
     <ol>
         <?php
         foreach ($product->images as $value) {
-            echo "<li><img src=\"\\" . Html::encode($value) . "\">
+            echo "<li><img src=\"" . Html::encode($value) . "\">
                 <div class=\"ism-caption ism-caption-0\">Карты " . Html::encode($product->title) . "</div></li>";
         }
         ?>

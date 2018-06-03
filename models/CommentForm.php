@@ -63,8 +63,6 @@ class CommentForm extends Model
         {
             return true;
         }
-        var_dump($comment);die();
-
         return false;
 
     }

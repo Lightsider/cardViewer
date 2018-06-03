@@ -18,7 +18,7 @@ $this->title = 'Регистрация';
         'fieldConfig' => [
             'template' => "<div class=\"input-group input-group-lg\">{label}\n{input}\n</div>",
             'labelOptions' => [ 'class' => 'input-group-addon' ]
-        ],
+        ]
     ]); ?>
 
     <?= $form->field($model, 'login')->textInput(['autofocus' => true]) ?>

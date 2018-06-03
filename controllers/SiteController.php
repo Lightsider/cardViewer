@@ -4,12 +4,16 @@ namespace app\controllers;
 
 use app\models\CommentForm;
 use app\models\Comments;
+use app\models\Notes;
+use app\models\NotesForm;
 use app\models\Products;
 use app\models\RegisterForm;
 use app\models\Reviews;
+use app\models\User;
 use app\models\Users;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -89,7 +93,6 @@ class SiteController extends Controller
         $model = Products::findIdentity($id);
 
 
-
         //Получение путей картинок
 
         $model->images = explode(",", $model->images);
@@ -101,17 +104,13 @@ class SiteController extends Controller
                 ]);
         else {
             $comment = new CommentForm();
-            $comments = Comments::find()->where("id_product=".$model->id)->all();
-            if(Yii::$app->request->post())
-            {
+            $comments = Comments::find()->where("id_product=" . $model->id)->all();
+            if (Yii::$app->request->isPost) {
                 $comment->load(Yii::$app->request->post());
-                if($comment->sendComment($model))
-                {
+                if ($comment->sendComment($model)) {
                     Yii::$app->session->setFlash('result', "success");
                     Yii::$app->session->setFlash('message', "Комментарий успешно оставлен");
-                }
-                else
-                {
+                } else {
                     Yii::$app->session->setFlash('result', "danger");
                     Yii::$app->session->setFlash('message', "При отправке комментария что-то пошло не так");
                 }
@@ -119,29 +118,56 @@ class SiteController extends Controller
             }
             return $this->render('product', [
                 'product' => $model,
-                'comments'=>$comments,
-                'commentForm'=>$comment
+                'comments' => $comments,
+                'commentForm' => $comment
             ]);
         }
     }
 
     public function actionUser()
     {
-        $id = Yii::$app->request->get('id');
+        $id = (int)Yii::$app->request->get('id');
         if (empty($id)) {
             return $this->goHome();
         }
-        $user = Users::findIdentity($id);
+        $user = User::findIdentity($id);
 
         if (empty($user))
             return $this->render('itemNotFound',
                 [
                     'item' => 'пользователь'
                 ]);
-        else
+        else {
+
+            $note = Notes::find()->where("id_user=".$id.
+            " and id_owner=".Yii::$app->user->id)->one();
+            $noteForm = new NotesForm();
+
+            //var_dump($note);die();
+            if(!empty($note))
+                $noteForm->text=$note->text;
+            else
+                $noteForm->text="Здесь может быть ваша заметка об этом пользователе. Ее увидете только вы.";
+
+            if(Yii::$app->request->isPost)
+            {
+                $noteForm->load(Yii::$app->request->post());
+
+                if ($noteForm->sendNotes($user)) {
+                    Yii::$app->session->setFlash('result', "success");
+                    Yii::$app->session->setFlash('message', "Заметка успешно оставлена");
+                } else {
+                    Yii::$app->session->setFlash('result', "danger");
+                    Yii::$app->session->setFlash('message', "При отправке заметки что-то пошло не так");
+                }
+                $this->redirect(Url::to(['site/user', 'id' => $id]));
+            }
+
             return $this->render('user', [
                 'user' => $user,
+                'noteForm'=>$noteForm
             ]);
+        }
     }
 
     /**
