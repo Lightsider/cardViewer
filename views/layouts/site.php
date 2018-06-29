@@ -21,7 +21,6 @@ AppAsset::register($this);
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?= Html::csrfMetaTags() ?>
     <link rel="stylesheet" type="text/css" href="https://fortrader.org/informers/css?id=52777">
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
@@ -71,7 +70,7 @@ AppAsset::register($this);
                 </li>
                 <li>
                     <a href=""><img src="" alt=""> NVIDIA Graphics cards </a>
-                    <ul>
+                    <ul name="vcards">
                         <?php foreach ($this->params['nvidia'] as $cart)
                         {
                             echo "<li><a href=\"".Url::toRoute(['site/product','id'=>$cart->id])."\">
@@ -81,7 +80,7 @@ AppAsset::register($this);
                 </li>
                 <li>
                     <a href=""><img src="" alt=""> AMD Graphics cards </a>
-                    <ul>
+                    <ul name="vcards">
                         <?php foreach ($this->params['amd'] as $cart)
                         {
                             echo "<li><a href=\"".Url::toRoute(['site/product','id'=>$cart->id])."\">

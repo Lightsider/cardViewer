@@ -3,7 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\NotSupportedException;
+
 
 /**
  * This is the model class for table "users".
@@ -124,6 +126,17 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         return $this->getPrimaryKey();
     }
 
+    public function generatePasswordHash($pass)
+    {
+        $MAX_PASSWORD_LENGHT = $GLOBALS['max_password_lenght'];
+        $pass=substr($pass,0,$MAX_PASSWORD_LENGHT);
+        try {
+            return md5($pass);
+        } catch (Exception $e) {
+        }
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -150,7 +163,9 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return \Yii::$app->security->validatePassword($password, $this->password);
+        $MAX_PASSWORD_LENGHT = $GLOBALS['max_password_lenght'];
+        $pass=substr($password,0,$MAX_PASSWORD_LENGHT);
+        return md5($pass)===$this->password;
     }
 
     /**

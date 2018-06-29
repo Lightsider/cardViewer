@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
 use yii\base\Model;
 
@@ -67,19 +68,24 @@ class RegisterForm extends Model
     public function register()
     {
         if (!$this->validate()) {
-            var_dump($this->getErrors());die();
             return null;
         }
 
+        $this->login=str_replace(["\\","/","'","\""],"",$this->login);
+
+        if(!$user = User::findByLogin($this->login))
         $user = new User();
+
 
         $user->login = $this->login;
         $user->setPassword($this->password);
 
         if ($this->file) {
             $user->image = \Yii::$app->security->generateRandomString() . '.jpg';
-        } else $user->image = "/uploads/no_image.png";
+        } else $user->image = "no_image.png";
         $user->selfdescription=$this->selfdescription;
+        $date = new DateTime('now',new \DateTimeZone("Asia/Barnaul"));
+        $user->date_reg= $date->format("Y-m-d H-i-s");
 
         $rbac = \Yii::$app->authManager;
         $userRole = $rbac->getRole('user');
@@ -88,11 +94,12 @@ class RegisterForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
         try {
 
-            if ($user->save()) {
+            if ($user->save(false)) {
                 if ($this->file) {
                     $this->file->saveAs(Yii::getAlias('@webroot') . "/uploads/{$user->image}");
                 }
 
+                $rbac->revokeAll($user->id);
                 $rbac->assign($userRole, $user->id);
 
                 $transaction->commit();

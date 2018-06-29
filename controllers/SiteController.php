@@ -12,6 +12,7 @@ use app\models\Reviews;
 use app\models\User;
 use app\models\Users;
 use Yii;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -24,6 +25,16 @@ use yii\web\UploadedFile;
 class SiteController extends Controller
 {
     public $layout = "site";
+
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
 
     /**
      * {@inheritdoc}
@@ -143,7 +154,7 @@ class SiteController extends Controller
             " and id_owner=".Yii::$app->user->id)->one();
             $noteForm = new NotesForm();
 
-            //var_dump($note);die();
+
             if(!empty($note))
                 $noteForm->text=$note->text;
             else
@@ -182,7 +193,10 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
+
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            var_dump($model->login());
             return $this->redirect("you/account");
         }
 
@@ -214,17 +228,22 @@ class SiteController extends Controller
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post())) {
 
+            try {
+                $review = new Reviews();
+                $review->name = $model->name;
+                $review->email = $model->email;
+                $review->message = $model->message;
 
-            $review = new Reviews();
-            $review->name = $model->name;
-            $review->email = $model->email;
-            $review->message = $model->message;
-
-            if ($review->save()) {
-                Yii::$app->session->setFlash('message', "Спасибо за ваш отзыв! 
+                if ($review->save()) {
+                    Yii::$app->session->setFlash('message', "Спасибо за ваш отзыв! 
             При необходимости, мы ответим вам на указанную почту");
-                return $this->refresh();
-            } else {
+                    return $this->refresh();
+                } else {
+                    throw new Exception("bad reviews");
+                }
+            }
+            catch (Exception $e)
+            {
                 Yii::$app->session->setFlash('message', "Что-то пошло не так:( Попробуйте еще раз");
                 return $this->refresh();
             }

@@ -11,6 +11,7 @@ namespace app\models;
  * @property string $password
  * @property string $image
  * @property string $selfdescription
+ * @property string $date_reg
  * @property string $pass write-only password
  *
  * @property Comments[] $comments
@@ -36,8 +37,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         return [
             [['login', 'password', 'selfdescription'], 'required'],
             [['selfdescription'], 'string'],
-            [['login', 'password', 'image'], 'string', 'max' => 255],
+            [['login', 'image'], 'string', 'max' => 255],
             [['login'], 'unique'],
+            [['password'], 'string', 'min' => 3, 'max' => 255],
         ];
     }
 
@@ -153,7 +155,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function setPassword($password)
     {
-        $this->password = \Yii::$app->security->generatePasswordHash($password);
+        $user = new Users();
+        $this->password = $user->generatePasswordHash($password);
     }
 
     public function getUploadPath()

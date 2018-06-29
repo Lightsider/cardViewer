@@ -5,6 +5,7 @@ namespace app\models;
 use DateTime;
 use Yii;
 use yii\base\Model;
+use yii\db\Query;
 
 /**
  * Register is the model behind the login form.
@@ -44,23 +45,36 @@ class NotesForm extends Model
      */
     public function sendNotes($user)
     {
-        if(Yii::$app->user->isGuest)
+        if (Yii::$app->user->isGuest)
             return false;
 
         $notes = new Notes();
-        $oldNote=Notes::find()->where("id_user=".$user->id.
-            " and id_owner=".Yii::$app->user->id)->one();
-        if(!empty($oldNote))
-            $notes=$oldNote;
+        $oldNote = Notes::find()->where("id_user=" . $user->id .
+            " and id_owner=" . Yii::$app->user->id)->one();
+        if (!empty($oldNote))
+            $notes = $oldNote;
 
 
+        $notes->id_user = $user->id;
+        $notes->id_owner = Yii::$app->user->id;
+        $notes->text = $this->text;
 
-        $notes->id_user=$user->id;
-        $notes->id_owner=Yii::$app->user->id;
-        $notes->text=$this->text;
 
-        if($notes->save())
-        {
+        if (empty($oldNote)) {
+            $query = Yii::$app->db->createCommand("INSERT INTO notes (id_owner,id_user,text) VALUES(:id_owner,:id_user,\"{$notes->text} \")", [
+                ':id_owner' => $notes->id_owner,
+                ':id_user' => $notes->id_user,
+            ]);
+        } else {
+            $query = Yii::$app->db->createCommand("UPDATE notes SET id_owner=:id_owner, id_user=:id_user, text=\"{$notes->text} \" WHERE id={$oldNote->id}", [
+                ':id_owner' => $notes->id_owner,
+                ':id_user' => $notes->id_user,
+            ]);
+        }
+        $notes->save();
+
+
+        if ($query->execute()) {
             return true;
         }
         return false;

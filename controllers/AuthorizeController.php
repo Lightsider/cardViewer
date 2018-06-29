@@ -17,6 +17,16 @@ use yii\web\UploadedFile;
 class AuthorizeController extends Controller
 {
     public $layout = "site";
+
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        $this->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
     /**
      * {@inheritdoc}
      */
@@ -97,6 +107,10 @@ class AuthorizeController extends Controller
             'user'=>$user
         ]);
     }
+
+
+
+    //-----------------------------------------------------------------------------------------------
 
     public function getNvidia()
     {

@@ -55,6 +55,7 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing'=>true,
             'rules' => [
+                '/api/users'=>'/api/users',
                 '/'=>'site/index',
                 'user/<id:\d+>'=>'site/user',
                 'product/<id:\d+>'=>'site/product',

@@ -2,6 +2,10 @@
 
 use yii\db\Migration;
 
+
+/*
+ *  don't forget up to RBAC migration
+ */
 /**
  * Class m180429_043324_addAllTables
  */
@@ -19,16 +23,8 @@ class m180429_043324_addAllTables extends Migration
                 'password' => $this->string()->notNull(),
                 'image' => $this->string(255),
                 'selfdescription' => $this->text()->notNull(),
+                'date_reg'=>$this->dateTime()->notNull()
             ]);
-
-            $this->insert('users',
-                [
-                    'login' => "admin",
-                    'password' => \Yii::$app->security->generatePasswordHash("admin"),
-                    'image' => "",
-                    'selfdescription' => "Администратор сайта"
-                ]
-            );
 
             $this->createTable('notes', [
                 'id' => $this->primaryKey()->comment('Первичный ключ'),
@@ -50,6 +46,19 @@ class m180429_043324_addAllTables extends Migration
                 'id' => $this->primaryKey()->comment('Первичный ключ'),
                 'title' => $this->string(255)->notNull()->unique(),
             ]);
+
+            $this->insert('category',
+                [
+                    'title' =>"Nvidia",
+                ]
+            );
+
+            $this->insert('category',
+                [
+                    'title' =>"AMD",
+                ]
+            );
+
 
             $this->createTable('comments', [
                 'id' => $this->primaryKey()->comment('Первичный ключ'),
